@@ -8,32 +8,47 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-@Configuration // Indica que esta clase contiene configuración de Spring
-@EnableWebSecurity // Habilita la seguridad web de Spring
+import java.util.List;
+
+@Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
-    // Define la cadena de filtros de seguridad
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(Customizer.withDefaults()) // Habilita CORS
                 .authorizeHttpRequests(authorize -> authorize
-                        // Permite el acceso público al endpoint de registro de usuarios
-                        .requestMatchers("/api/usuarios/registro").permitAll()
-                        // Cualquier otra solicitud requiere autenticación
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/usuarios/registro","/api/usuarios/login").permitAll() // Endpoint público
+                        .anyRequest().authenticated() // Resto requiere autenticación
                 )
-                // Habilita autenticación HTTP básica
-                .httpBasic(Customizer.withDefaults())
-                // Deshabilita CSRF (para pruebas o APIs sin navegador)
-                .csrf(csrf -> csrf.disable());
+                .httpBasic(Customizer.withDefaults()) // Autenticación básica
+                .csrf(csrf -> csrf.disable()); // Desactiva CSRF (para APIs REST)
 
-        return http.build(); // Construye y retorna la configuración de seguridad
+        return http.build();
     }
 
-    // Bean para encriptar contraseñas usando BCrypt
+    // Bean para configurar las reglas de CORS
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:4200")); // Frontend
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Métodos permitidos
+        configuration.setAllowedHeaders(List.of("*")); // Todos los encabezados permitidos
+        configuration.setAllowCredentials(true); // Permitir envío de cookies/autenticación
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // Aplica a todos los endpoints
+        return source;
+    }
+
+    // Bean para codificar contraseñas
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Retorna el codificador de contraseñas
+        return new BCryptPasswordEncoder();
     }
 }

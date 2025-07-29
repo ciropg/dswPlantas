@@ -1,5 +1,6 @@
 package dsw.sighierbabackend.service;
 
+import dsw.sighierbabackend.dto.UsuarioLoginRequestDTO;
 import dsw.sighierbabackend.dto.UsuarioRequestDTO;
 import dsw.sighierbabackend.dto.UsuarioResponseDTO;
 import dsw.sighierbabackend.entity.Rol;
@@ -52,6 +53,21 @@ public class UsuarioService {
                 .nombreUsuario(guardado.getNombreUsuario())
                 .correo(guardado.getCorreo())
                 .rol(guardado.getRol().getNombre())
+                .build();
+    }
+    public UsuarioResponseDTO login(UsuarioLoginRequestDTO dto) {
+        Usuario usuario = usuarioRepository.findByCorreo(dto.getCorreo())
+                .orElseThrow(() -> new RuntimeException("Correo no registrado"));
+
+        if (!passwordEncoder.matches(dto.getContrasena(), usuario.getContrasena())) {
+            throw new RuntimeException("Contraseña incorrecta");
+        }
+
+        return UsuarioResponseDTO.builder()
+                .id(usuario.getId())
+                .nombreUsuario(usuario.getNombreUsuario())
+                .correo(usuario.getCorreo())
+                .rol(usuario.getRol().getNombre())
                 .build();
     }
 

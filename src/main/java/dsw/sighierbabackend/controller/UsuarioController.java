@@ -1,5 +1,6 @@
 package dsw.sighierbabackend.controller;
 
+import dsw.sighierbabackend.dto.UsuarioLoginRequestDTO;
 import dsw.sighierbabackend.dto.UsuarioRequestDTO;
 import dsw.sighierbabackend.dto.UsuarioResponseDTO;
 import dsw.sighierbabackend.service.UsuarioService;
@@ -18,6 +19,10 @@ public class UsuarioController {
     @PostMapping("/registro")
     public UsuarioResponseDTO registrar(@RequestBody UsuarioRequestDTO dto) {
         return usuarioService.registrarUsuario(dto);
+    }
+    @PostMapping("/login")
+    public UsuarioResponseDTO login(@RequestBody UsuarioLoginRequestDTO dto) {
+        return usuarioService.login(dto);
     }
 
 

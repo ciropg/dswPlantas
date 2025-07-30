@@ -23,7 +23,7 @@ public class SecurityConfig {
         http
                 .cors(Customizer.withDefaults()) // Habilita CORS
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/usuarios/registro","/api/usuarios/login").permitAll() // Endpoint público
+                        .requestMatchers("/api/usuarios/registro","/api/usuarios/login","/api/categorias","/api/hierbas").permitAll() // Endpoint público
                         .anyRequest().authenticated() // Resto requiere autenticación
                 )
                 .httpBasic(Customizer.withDefaults()) // Autenticación básica

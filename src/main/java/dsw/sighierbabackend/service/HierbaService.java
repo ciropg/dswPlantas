@@ -60,4 +60,38 @@ public class HierbaService {
                 .build()
         ).collect(Collectors.toList());
     }
+    public void eliminarHierba(Long id) {
+        if (!hierbaRepository.existsById(id)) {
+            throw new RuntimeException("Hierba no encontrada con ID: " + id);
+        }
+        hierbaRepository.deleteById(id);
+    }
+    public HierbaResponseDTO actualizarHierba(Long id, HierbaRequestDTO dto) {
+        Hierba hierbaExistente = hierbaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Hierba no encontrada con ID: " + id));
+
+        Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+
+        hierbaExistente.setNombreComun(dto.getNombreComun());
+        hierbaExistente.setNombreCientifico(dto.getNombreCientifico());
+        hierbaExistente.setDescripcion(dto.getDescripcion());
+        hierbaExistente.setPropiedades(dto.getPropiedades());
+        hierbaExistente.setUsos(dto.getUsos());
+        hierbaExistente.setCategoria(categoria);
+
+        Hierba hierbaActualizada = hierbaRepository.save(hierbaExistente);
+
+        return HierbaResponseDTO.builder()
+                .id(hierbaActualizada.getId())
+                .nombreComun(hierbaActualizada.getNombreComun())
+                .nombreCientifico(hierbaActualizada.getNombreCientifico())
+                .descripcion(hierbaActualizada.getDescripcion())
+                .propiedades(hierbaActualizada.getPropiedades())
+                .usos(hierbaActualizada.getUsos())
+                .fechaRegistro(hierbaActualizada.getFechaRegistro())
+                .categoria(hierbaActualizada.getCategoria())
+                .build();
+    }
+
 }

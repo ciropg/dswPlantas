@@ -22,4 +22,12 @@ public class HierbaController {
     public List<HierbaResponseDTO> listarHierbas() {
         return hierbaService.listarHierbas();
     }
+    @DeleteMapping("/{id}")
+    public void eliminarHierba(@PathVariable Long id) {
+        hierbaService.eliminarHierba(id);
+    }
+    @PutMapping("/actualizar/{id}")
+    public HierbaResponseDTO actualizarHierba(@PathVariable Long id, @RequestBody HierbaRequestDTO dto) {
+        return hierbaService.actualizarHierba(id, dto);
+    }
 }
